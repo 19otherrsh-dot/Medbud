@@ -1,0 +1,19 @@
+{
+  "name": "medbud-workspace",
+  "private": true,
+  "packageManager": "npm@10.2.4",
+  "scripts": {
+    "build": "turbo build",
+    "dev": "turbo dev",
+    "lint": "turbo lint",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+  },
+  "devDependencies": {
+    "turbo": "latest",
+    "prettier": "^3.2.5"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ]
+}

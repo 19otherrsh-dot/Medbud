@@ -1,0 +1,131 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  PATIENT
+  AGENT
+  HOSPITAL_ADMIN
+  MEDBUD_COORDINATOR
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  role      Role     @default(PATIENT)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  patientProfile PatientProfile?
+  agentProfile   AgentProfile?
+}
+
+model PatientProfile {
+  id          String   @id @default(uuid())
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id])
+  firstName   String
+  lastName    String
+  phoneNumber String?
+  country     String?
+  dateOfBirth DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  inquiries   Inquiry[]
+  bookings    Booking[]
+}
+
+model AgentProfile {
+  id             String   @id @default(uuid())
+  userId         String   @unique
+  user           User     @relation(fields: [userId], references: [id])
+  companyName    String
+  contactNumber  String
+  country        String
+  commissionRate Float    @default(5.0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model Hospital {
+  id              String   @id @default(uuid())
+  name            String
+  city            String
+  country         String   @default("India")
+  accreditations  String[] // JCI, NABH
+  description     String?
+  imageUrl        String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  doctors         Doctor[]
+  procedures      Procedure[]
+}
+
+model Doctor {
+  id              String   @id @default(uuid())
+  hospitalId      String
+  hospital        Hospital @relation(fields: [hospitalId], references: [id])
+  name            String
+  specialty       String
+  qualifications  String[]
+  experienceYears Int
+  imageUrl        String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model Procedure {
+  id              String   @id @default(uuid())
+  hospitalId      String
+  hospital        Hospital @relation(fields: [hospitalId], references: [id])
+  name            String
+  category        String // e.g., Cardiology, Oncology
+  baseCostUSD     Float
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+enum InquiryStatus {
+  PENDING
+  REVIEWING
+  QUOTED
+  CONVERTED
+  CLOSED
+}
+
+model Inquiry {
+  id               String         @id @default(uuid())
+  patientProfileId String
+  patient          PatientProfile @relation(fields: [patientProfileId], references: [id])
+  symptoms         String
+  specialtyNeeded  String?
+  status           InquiryStatus  @default(PENDING)
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+}
+
+enum BookingStatus {
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+}
+
+model Booking {
+  id               String         @id @default(uuid())
+  patientProfileId String
+  patient          PatientProfile @relation(fields: [patientProfileId], references: [id])
+  hospitalId       String
+  procedureId      String?
+  status           BookingStatus  @default(CONFIRMED)
+  totalCostUSD     Float?
+  travelDate       DateTime?
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+}

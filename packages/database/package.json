@@ -1,0 +1,20 @@
+{
+  "name": "@medbud/database",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push",
+    "build": "tsc"
+  },
+  "dependencies": {
+    "@prisma/client": "^7.8.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.40",
+    "prisma": "^7.8.0",
+    "typescript": "^5.9.3"
+  }
+}
